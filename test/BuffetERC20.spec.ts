@@ -1,7 +1,5 @@
 import chai, { expect } from 'chai'
-import { Contract } from 'ethers'
-import { MaxUint256 } from 'ethers/constants'
-import { bigNumberify, hexlify, keccak256, defaultAbiCoder, toUtf8Bytes } from 'ethers/utils'
+import { ethers, BigNumber, Contract } from 'ethers'
 import { solidity, MockProvider, deployContract } from 'ethereum-waffle'
 import { ecsign } from 'ethereumjs-util'
 
@@ -9,16 +7,21 @@ import { expandTo18Decimals, getApprovalDigest } from './shared/utilities'
 
 import ERC20 from '../build/ERC20.json'
 
+const { MaxUint256 } = ethers.constants
+const { hexlify, keccak256, defaultAbiCoder, toUtf8Bytes } = ethers.utils
+
 chai.use(solidity)
 
 const TOTAL_SUPPLY = expandTo18Decimals(10000)
 const TEST_AMOUNT = expandTo18Decimals(10)
 
-describe('UniswapV2ERC20', () => {
+describe('BuffetERC20', () => {
   const provider = new MockProvider({
-    hardfork: 'istanbul',
-    mnemonic: 'horn horn horn horn horn horn horn horn horn horn horn horn',
-    gasLimit: 9999999
+    ganacheOptions: {
+      hardfork: 'istanbul',
+      mnemonic: 'horn horn horn horn horn horn horn horn horn horn horn horn',
+      gasLimit: 9999999,
+    },
   })
   const [wallet, other] = provider.getWallets()
 
@@ -29,8 +32,8 @@ describe('UniswapV2ERC20', () => {
 
   it('name, symbol, decimals, totalSupply, balanceOf, DOMAIN_SEPARATOR, PERMIT_TYPEHASH', async () => {
     const name = await token.name()
-    expect(name).to.eq('Uniswap V2')
-    expect(await token.symbol()).to.eq('UNI-V2')
+    expect(name).to.eq('Buffet LPs')
+    expect(await token.symbol()).to.eq('Buffet-LP')
     expect(await token.decimals()).to.eq(18)
     expect(await token.totalSupply()).to.eq(TOTAL_SUPPLY)
     expect(await token.balanceOf(wallet.address)).to.eq(TOTAL_SUPPLY)
@@ -45,7 +48,7 @@ describe('UniswapV2ERC20', () => {
             keccak256(toUtf8Bytes(name)),
             keccak256(toUtf8Bytes('1')),
             1,
-            token.address
+            token.address,
           ]
         )
       )
@@ -111,6 +114,6 @@ describe('UniswapV2ERC20', () => {
       .to.emit(token, 'Approval')
       .withArgs(wallet.address, other.address, TEST_AMOUNT)
     expect(await token.allowance(wallet.address, other.address)).to.eq(TEST_AMOUNT)
-    expect(await token.nonces(wallet.address)).to.eq(bigNumberify(1))
+    expect(await token.nonces(wallet.address)).to.eq(BigNumber.from(1))
   })
 })
