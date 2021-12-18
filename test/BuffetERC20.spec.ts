@@ -1,28 +1,21 @@
 import chai, { expect } from 'chai'
 import { ethers, BigNumber, Contract } from 'ethers'
-import { solidity, MockProvider, deployContract } from 'ethereum-waffle'
+import { waffle } from 'hardhat'
 import { ecsign } from 'ethereumjs-util'
 
 import { expandTo18Decimals, getApprovalDigest } from './shared/utilities'
 
-import ERC20 from '../build/ERC20.json'
+import ERC20 from '../artifacts/contracts/test/ERC20.sol/ERC20.json'
 
+const { deployContract } = waffle
 const { MaxUint256 } = ethers.constants
 const { hexlify, keccak256, defaultAbiCoder, toUtf8Bytes } = ethers.utils
-
-chai.use(solidity)
 
 const TOTAL_SUPPLY = expandTo18Decimals(10000)
 const TEST_AMOUNT = expandTo18Decimals(10)
 
 describe('BuffetERC20', () => {
-  const provider = new MockProvider({
-    ganacheOptions: {
-      hardfork: 'istanbul',
-      mnemonic: 'horn horn horn horn horn horn horn horn horn horn horn horn',
-      gasLimit: 9999999,
-    },
-  })
+  const provider = waffle.provider
   const [wallet, other] = provider.getWallets()
 
   let token: Contract
@@ -47,7 +40,7 @@ describe('BuffetERC20', () => {
             ),
             keccak256(toUtf8Bytes(name)),
             keccak256(toUtf8Bytes('1')),
-            1,
+            31337, // hardhat local network chain id
             token.address,
           ]
         )

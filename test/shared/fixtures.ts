@@ -1,12 +1,13 @@
 import { Contract, Wallet } from 'ethers'
+import { waffle } from 'hardhat';
 import { Web3Provider } from '@ethersproject/providers'
-import { deployContract } from 'ethereum-waffle'
-
 import { expandTo18Decimals } from './utilities'
 
-import ERC20 from '../../build/ERC20.json'
-import BuffetFactory from '../../build/BuffetFactory.json'
-import BuffetPair from '../../build/BuffetPair.json'
+import ERC20 from '../../artifacts/contracts/test/ERC20.sol/ERC20.json'
+import BuffetFactory from '../../artifacts/contracts/BuffetFactory.sol/BuffetFactory.json'
+import BuffetPair from '../../artifacts/contracts/BuffetPair.sol/BuffetPair.json'
+
+const { deployContract } = waffle;
 
 interface FactoryFixture {
   factory: Contract
@@ -37,7 +38,7 @@ export async function pairFixture([wallet]: Wallet[], provider: Web3Provider): P
   const pairAddress = await factory.getPair(tokenA.address, tokenB.address)
   const pair = new Contract(pairAddress, JSON.stringify(BuffetPair.abi), provider).connect(wallet)
 
-  const token0Address = (await pair.token0()).address
+  const token0Address = await pair.token0()
   const token0 = tokenA.address === token0Address ? tokenA : tokenB
   const token1 = tokenA.address === token0Address ? tokenB : tokenA
 

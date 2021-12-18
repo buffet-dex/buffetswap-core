@@ -1,15 +1,13 @@
 import chai, { expect } from 'chai'
 import { ethers, BigNumber, Contract } from 'ethers'
-import { solidity, MockProvider, createFixtureLoader } from 'ethereum-waffle'
-
+import { waffle } from 'hardhat'
 import { getCreate2Address } from './shared/utilities'
 import { factoryFixture } from './shared/fixtures'
 
-import BuffetPair from '../build/BuffetPair.json'
+import BuffetPair from '../artifacts/contracts/BuffetPair.sol/BuffetPair.json'
 
+const { deployContract, createFixtureLoader } = waffle
 const { AddressZero } = ethers.constants
-
-chai.use(solidity)
 
 const TEST_ADDRESSES: [string, string] = [
   '0x1000000000000000000000000000000000000000',
@@ -17,13 +15,7 @@ const TEST_ADDRESSES: [string, string] = [
 ]
 
 describe('BuffetFactory', () => {
-  const provider = new MockProvider({
-    ganacheOptions: {
-      hardfork: 'istanbul',
-      mnemonic: 'horn horn horn horn horn horn horn horn horn horn horn horn',
-      gasLimit: 9999999,
-    },
-  })
+  const provider = waffle.provider
   const [wallet, other] = provider.getWallets()
   const loadFixture = createFixtureLoader([wallet, other], provider)
 
@@ -40,7 +32,7 @@ describe('BuffetFactory', () => {
   })
 
   async function createPair(tokens: [string, string]) {
-    const bytecode = `0x${BuffetPair.evm.bytecode.object}`
+    const bytecode = BuffetPair.bytecode
     const create2Address = getCreate2Address(factory.address, tokens, bytecode)
     await expect(factory.createPair(...tokens))
       .to.emit(factory, 'PairCreated')
@@ -70,7 +62,7 @@ describe('BuffetFactory', () => {
   it('createPair:gas', async () => {
     const tx = await factory.createPair(...TEST_ADDRESSES)
     const receipt = await tx.wait()
-    expect(receipt.gasUsed).to.eq(2508306)
+    expect(receipt.gasUsed).to.eq(2518306)
   })
 
   it('setFeeTo', async () => {

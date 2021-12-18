@@ -1,27 +1,21 @@
 import chai, { expect } from 'chai'
 import { ethers, BigNumber, Contract } from 'ethers'
-import { solidity, MockProvider, createFixtureLoader } from 'ethereum-waffle'
+import { waffle } from 'hardhat'
 
 import { expandTo18Decimals, mineBlock, encodePrice } from './shared/utilities'
 import { pairFixture } from './shared/fixtures'
 
+const { deployContract, createFixtureLoader } = waffle
+
 const { AddressZero } = ethers.constants
 const MINIMUM_LIQUIDITY = BigNumber.from(10).pow(3)
-
-chai.use(solidity)
 
 const overrides = {
   gasLimit: 9999999,
 }
 
 describe('BuffetPair', () => {
-  const provider = new MockProvider({
-    ganacheOptions: {
-      hardfork: 'istanbul',
-      mnemonic: 'horn horn horn horn horn horn horn horn horn horn horn horn',
-      gasLimit: 9999999,
-    },
-  })
+  const provider = waffle.provider
   const [wallet, other] = provider.getWallets()
   const loadFixture = createFixtureLoader([wallet], provider)
 
@@ -176,7 +170,7 @@ describe('BuffetPair', () => {
     await mineBlock(provider, (await provider.getBlock('latest')).timestamp + 1)
     const tx = await pair.swap(expectedOutputAmount, 0, wallet.address, '0x', overrides)
     const receipt = await tx.wait()
-    expect(receipt.gasUsed).to.eq(73462)
+    expect(receipt.gasUsed).to.eq(73162)
   })
 
   it('burn', async () => {
