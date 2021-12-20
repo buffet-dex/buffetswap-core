@@ -1,5 +1,5 @@
 import { Contract, Wallet } from 'ethers'
-import { waffle } from 'hardhat';
+import { waffle } from 'hardhat'
 import { Web3Provider } from '@ethersproject/providers'
 import { expandTo18Decimals } from './utilities'
 
@@ -7,14 +7,14 @@ import ERC20 from '../../artifacts/contracts/test/ERC20.sol/ERC20.json'
 import BuffetFactory from '../../artifacts/contracts/BuffetFactory.sol/BuffetFactory.json'
 import BuffetPair from '../../artifacts/contracts/BuffetPair.sol/BuffetPair.json'
 
-const { deployContract } = waffle;
+const { deployContract } = waffle
 
 interface FactoryFixture {
   factory: Contract
 }
 
 const overrides = {
-  gasLimit: 9999999
+  gasLimit: 9999999,
 }
 
 export async function factoryFixture([wallet]: Wallet[], _: Web3Provider): Promise<FactoryFixture> {
