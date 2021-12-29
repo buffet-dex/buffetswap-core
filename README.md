@@ -30,5 +30,14 @@ Deployed BuffetFactory: [0x2119E6A0c07c667D2D4777F082b718e8950AFDf1][2]
 yarn hardhat run --network bsc_test scripts/deploy.ts
 ```
 
+### AVAX Testnet
+
+Deployed BuffetFactory: [0x2119E6A0c07c667D2D4777F082b718e8950AFDf1][3]
+
+```sh
+yarn hardhat run --network avax_test scripts/deploy.ts
+```
+
 [1]: https://github.com/Uniswap/v2-core
 [2]: https://testnet.bscscan.com/address/0x2119e6a0c07c667d2d4777f082b718e8950afdf1#code
+[3]: https://testnet.snowtrace.io/address/0x2119E6A0c07c667D2D4777F082b718e8950AFDf1#code
